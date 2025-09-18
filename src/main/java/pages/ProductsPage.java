@@ -1,11 +1,27 @@
 
 package pages;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
 import base.BasePage;
 
 public class ProductsPage extends BasePage {
+    // Checks if the 'Add to cart' button is visible for a specific item by name
+    public boolean isAddToCartButtonVisibleForItem(String itemLabel) {
+        List<WebElement> items = driver.findElements(By.cssSelector(".inventory_list .inventory_item"));
+        for (WebElement item : items) {
+            WebElement labelElement = item.findElement(By.cssSelector(".inventory_item_label .inventory_item_name"));
+            if (labelElement.getText().trim().equals(itemLabel)) {
+                List<WebElement> addToCartButtons = item.findElements(By.cssSelector("button.btn_primary.btn_inventory"));
+                return !addToCartButtons.isEmpty() && addToCartButtons.get(0).isDisplayed();
+            }
+        }
+        return false;
+    }
     private By cartIcon = By.className("shopping_cart_link");
 
     public ProductsPage(WebDriver driver) {
@@ -15,11 +31,13 @@ public class ProductsPage extends BasePage {
 
     // Add any item to cart by item label text
     public void addItemToCart(String itemLabel) {
-        java.util.List<org.openqa.selenium.WebElement> items = driver.findElements(By.cssSelector(".inventory_list .inventory_item"));
-        for (org.openqa.selenium.WebElement item : items) {
-            org.openqa.selenium.WebElement labelElement = item.findElement(By.className("inventory_item_name"));
-            if (labelElement.getText().equals(itemLabel)) {
-                item.findElement(By.xpath(".//button[contains(text(),'Add to cart')]")).click();
+        List<WebElement> items = driver.findElements(By.cssSelector(".inventory_list .inventory_item"));
+        for (WebElement item : items) {
+            WebElement labelElement = item.findElement(By.cssSelector(".inventory_item_label .inventory_item_name"));
+            if (labelElement.getText().trim().equals(itemLabel)) {
+                // Find the button with class 'btn_primary btn_inventory' inside this item
+                WebElement addToCartButton = item.findElement(By.cssSelector("button.btn_primary.btn_inventory"));
+                addToCartButton.click();
                 break;
             }
         }
@@ -43,13 +61,16 @@ public class ProductsPage extends BasePage {
         return driver.getCurrentUrl().contains("inventory");
     }
 
-    // Returns the count of "Add to cart" buttons on the products page
-    public int getAddToCartButtonsCount() {
-        return driver.findElements(By.xpath("//button[contains(text(),'Add to cart')]")).size();
-    }
     //verify products page heading. Products
     public boolean isProductsPageHeadingCorrect() {
         String heading = driver.findElement(By.className("product_label")).getText();
         return "Products".equals(heading);
+    }
+
+    // Verifies if at least one "Add to cart" button is available on the products page
+    public boolean isAddToCartButtonPresent() {
+        // The button has class 'btn_primary btn_inventory' according to the HTML
+        List<WebElement> addToCartButtons = driver.findElements(By.cssSelector("button.btn_primary.btn_inventory"));
+        return !addToCartButtons.isEmpty();
     }
 }

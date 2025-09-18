@@ -2,23 +2,24 @@ package tests;
 
 import base.BaseTest;
 import org.testng.Assert;
-import org.openqa.selenium.By;
-import java.time.Duration;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import pages.LoginPage;
 import pages.ProductsPage;
 
 public class ProductsTest extends BaseTest {
     private ProductsPage productsPage;
-    private final String itemName = "sauce-labs-backpack";
+    private final String itemName = "Sauce Labs Backpack";
+
+    @BeforeClass
+    public void setUp() {
+        productsPage = new ProductsPage(driver);
+    }
 
     // Test: verify at least one ADD TO CART button is present on the page using POM
     @Test(priority = 1)
     public void testAddToCartButtonIsPresent() {
-        int addToCartButtons = productsPage.getAddToCartButtonsCount();
-        Assert.assertTrue(addToCartButtons > 0, "At least one 'Add to cart' button should be present on the page");
+        Assert.assertTrue(productsPage.isAddToCartButtonPresent(),
+                "At least one 'Add to cart' button should be present on the page");
     }
 
     // Positive test: add item to cart
@@ -31,20 +32,21 @@ public class ProductsTest extends BaseTest {
     // Edge case: add item to cart twice
     @Test(priority = 3)
     public void testAddItemToCartTwice() {
-        productsPage.addItemToCart(itemName);
-        try {
-            productsPage.addItemToCart(itemName);
-            Assert.assertTrue(productsPage.isItemInCart(1), "Item should still be in cart after second add");
-        } catch (Exception e) {
-            Assert.assertTrue(productsPage.isItemInCart(1), "Item should still be in cart after second add");
-        }
+        // Check if 'Add to cart' button is still visible for this item
+        boolean addToCartVisible = productsPage.isAddToCartButtonVisibleForItem(itemName);
+        Assert.assertFalse(addToCartVisible,
+                "'Add to cart' button should not be visible for the item after adding to cart");
     }
 
     // Edge case: add item after page reload
     @Test(priority = 4)
     public void testAddItemAfterReload() {
         driver.navigate().refresh();
-        productsPage.addItemToCart(itemName);
-        Assert.assertTrue(productsPage.isItemInCart(1), "Item should be in cart after reload and add");
+        Assert.assertTrue(productsPage.isItemInCart(1), "Item should be in cart after adding");
+        // Check if 'Add to cart' button is still visible for this item
+        boolean addToCartVisible = productsPage.isAddToCartButtonVisibleForItem(itemName);
+        Assert.assertFalse(addToCartVisible,
+                "'Add to cart' button should not be visible for the item after adding to cart");
+
     }
 }

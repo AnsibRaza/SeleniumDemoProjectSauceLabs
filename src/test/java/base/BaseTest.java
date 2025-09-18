@@ -12,6 +12,7 @@ public class BaseTest {
     @BeforeSuite
     public void setUpSuite() {
         driver = new ChromeDriver();
+        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
     }
 

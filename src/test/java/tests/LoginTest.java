@@ -97,6 +97,11 @@ public class LoginTest extends BaseTest {
     // Positive test: valid credentials
     @Test(priority = 8, groups = { "regression" })
     public void testLoginWithValidCredentials() {
+        //Login with valid credentials
+        goToLoginPage();
+        loginPage.enterUsername("standard_user");
+        loginPage.enterPassword("secret_sauce");
+        loginPage.clickLogin();
         // Initialize productsPage after successful login
         productsPage = new ProductsPage(driver);
         // Verify if the Products page is displayed
