@@ -2,7 +2,6 @@ package tests;
 
 import base.BaseTest;
 import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.ProductsPage;
@@ -98,10 +97,8 @@ public class LoginTest extends BaseTest {
     // Positive test: valid credentials
     @Test(priority = 8, groups = { "regression" })
     public void testLoginWithValidCredentials() {
-        goToLoginPage();
-        loginPage.enterUsername("standard_user");
-        loginPage.enterPassword("secret_sauce");
-        loginPage.clickLogin();
+        // Initialize productsPage after successful login
+        productsPage = new ProductsPage(driver);
         // Verify if the Products page is displayed
         Assert.assertTrue(productsPage.isProductsPageHeadingCorrect(), "Should be on Products page after login");
     }

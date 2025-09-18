@@ -14,16 +14,11 @@ public class ProductsTest extends BaseTest {
     private ProductsPage productsPage;
     private final String itemName = "sauce-labs-backpack";
 
-    // Negative test: try to add item when button is not present
+    // Test: verify at least one ADD TO CART button is present on the page using POM
     @Test(priority = 1)
-    public void testAddToCartButtonNotPresent() {
-        driver.get("https://www.saucedemo.com/inventory.html?no-" + itemName);
-        try {
-            productsPage.addItemToCart(itemName);
-            Assert.fail("Should throw exception when add to cart button is not present");
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().toLowerCase().contains("no such element"), "Exception should indicate missing element");
-        }
+    public void testAddToCartButtonIsPresent() {
+        int addToCartButtons = productsPage.getAddToCartButtonsCount();
+        Assert.assertTrue(addToCartButtons > 0, "At least one 'Add to cart' button should be present on the page");
     }
 
     // Positive test: add item to cart

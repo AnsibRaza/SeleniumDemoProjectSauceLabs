@@ -13,10 +13,16 @@ public class ProductsPage extends BasePage {
     }
 
 
-    // Add any item to cart by item name (e.g., "sauce-labs-backpack")
-    public void addItemToCart(String itemName) {
-        String selector = String.format("button[data-test='add-to-cart-%s']", itemName);
-        driver.findElement(By.cssSelector(selector)).click();
+    // Add any item to cart by item label text
+    public void addItemToCart(String itemLabel) {
+        java.util.List<org.openqa.selenium.WebElement> items = driver.findElements(By.cssSelector(".inventory_list .inventory_item"));
+        for (org.openqa.selenium.WebElement item : items) {
+            org.openqa.selenium.WebElement labelElement = item.findElement(By.className("inventory_item_name"));
+            if (labelElement.getText().equals(itemLabel)) {
+                item.findElement(By.xpath(".//button[contains(text(),'Add to cart')]")).click();
+                break;
+            }
+        }
     }
 
     // Check if any item is in the cart by expected count
@@ -37,6 +43,10 @@ public class ProductsPage extends BasePage {
         return driver.getCurrentUrl().contains("inventory");
     }
 
+    // Returns the count of "Add to cart" buttons on the products page
+    public int getAddToCartButtonsCount() {
+        return driver.findElements(By.xpath("//button[contains(text(),'Add to cart')]")).size();
+    }
     //verify products page heading. Products
     public boolean isProductsPageHeadingCorrect() {
         String heading = driver.findElement(By.className("product_label")).getText();
