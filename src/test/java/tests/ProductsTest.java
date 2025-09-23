@@ -4,15 +4,20 @@ import base.BaseTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import pages.CartPage;
 import pages.ProductsPage;
 
 public class ProductsTest extends BaseTest {
+    private final String secondItemName = "Sauce Labs Bike Light";
     private ProductsPage productsPage;
+    private CartPage cartPage;
     private final String itemName = "Sauce Labs Backpack";
 
     @BeforeClass
     public void setUp() {
         productsPage = new ProductsPage(driver);
+        cartPage = new CartPage(driver);
     }
 
     // Test: verify at least one ADD TO CART button is present on the page using POM
@@ -47,6 +52,20 @@ public class ProductsTest extends BaseTest {
         boolean addToCartVisible = productsPage.isAddToCartButtonVisibleForItem(itemName);
         Assert.assertFalse(addToCartVisible,
                 "'Add to cart' button should not be visible for the item after adding to cart");
+    }
 
+    // Test: add a second item and verify cart count is 2
+    @Test(priority = 5)
+    public void testAddSecondItemToCart() {
+        productsPage.addItemToCart(secondItemName);
+        Assert.assertTrue(productsPage.isItemInCart(2), "Cart count should be 2 after adding two items");
+    }
+
+    // Test: click on the shopping cart and verify cart page is displayed
+    @Test(priority = 6)
+    public void testGoToCartAndVerifyCartPage() {
+        productsPage.goToCart();
+        String cartHeading = cartPage.getCartPageHeading();
+        Assert.assertEquals(cartHeading, "Your Cart", "Cart page heading should be 'Your Cart'");
     }
 }
